@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         register.put("colegio",txtinstitucion);
         register.put("nromesas",txtmesa);
         int cant = db.update("votantes",register,"cedula="+txtcedula,null);
-        bd.close();
+        db.close();
         if(cant>0) {
             Toast.makeText(this,"Se modificaron los registros con ese documento.",Toast.LENGTH_SHORT).show();
         }else {
