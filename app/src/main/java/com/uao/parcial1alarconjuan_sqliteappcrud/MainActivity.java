@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
@@ -55,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
         AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"administracion",null,1);
         SQLiteDatabase db = sqlAdmin.getWritableDatabase();
         ContentValues register = new ContentValues();
-        String txtcedula,txtnombreCompleto,txtinstitucion,txtmesa;
-        txtcedula = cedula.getText().toString();
+        int txtcedula;
+        String txtnombreCompleto,txtinstitucion,txtmesa;
+        txtcedula =  Integer.parseInt(cedula.getText().toString());
         txtnombreCompleto = nombreCompleto.getText().toString();
         txtinstitucion = institucion.getText().toString();
         txtmesa = mesa.getText().toString();
@@ -64,38 +66,50 @@ public class MainActivity extends AppCompatActivity {
         register.put("nombre",txtnombreCompleto);
         register.put("colegio",txtinstitucion);
         register.put("nromesas",txtmesa);
-        db.insert("votantes",null,register);
-        db.close();
+        try {
+            db.insert("votantes",null,register);
+            db.close();
+        }catch (SQLException e){
+            System.out.println(e);
+        }
+
         cedula.setText("");nombreCompleto.setText("");institucion.setText("");mesa.setText("");
         Toast.makeText(this,"Se realizó el registro exitosamente",Toast.LENGTH_SHORT).show();
     }
     public void read(View v){
         AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"administracion",null,1);
         SQLiteDatabase db = sqlAdmin.getWritableDatabase();
-        String ced = cedula.getText().toString();
-        Cursor row = db.rawQuery("SELECT nombre, colegio, nromesa FROM votantes WHERE cedula="+ced,null);
+        int ced = Integer.parseInt(cedula.getText().toString());
+        try{
+        Cursor row = db.rawQuery("select nombre,colegio,nromesa from votantes where cedula="+ced,null);
         if(row.moveToFirst()) {
             nombreCompleto.setText(row.getString(0));
             institucion.setText(row.getString(1));
             mesa.setText(row.getString(2));
         }else{
             Toast.makeText(this,"No se encontraron registros con ese documento.",Toast.LENGTH_SHORT).show();
+
         }
         db.close();
+        }catch (SQLException e){
+            System.out.println(e);
+            Toast.makeText(this,e.toString(),Toast.LENGTH_SHORT).show();
+        }
     }
     public void update(View v) {
         AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"administracion",null,1);
         SQLiteDatabase db = sqlAdmin.getWritableDatabase();
         ContentValues register = new ContentValues();
-        String txtcedula,txtnombreCompleto,txtinstitucion,txtmesa;
-        txtcedula = cedula.getText().toString();
+        int txtcedula,cant;
+        String txtnombreCompleto,txtinstitucion,txtmesa;
+        txtcedula = Integer.parseInt(cedula.getText().toString());
         txtnombreCompleto = nombreCompleto.getText().toString();
         txtinstitucion = institucion.getText().toString();
         txtmesa = mesa.getText().toString();
         register.put("nombre",txtnombreCompleto);
         register.put("colegio",txtinstitucion);
         register.put("nromesas",txtmesa);
-        int cant = db.update("votantes",register,"cedula="+txtcedula,null);
+        cant = db.update("votantes",register,"cedula="+txtcedula,null);
         db.close();
         if(cant>0) {
             Toast.makeText(this,"Se modificaron los registros con ese documento.",Toast.LENGTH_SHORT).show();
@@ -106,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     public void delete(View v){
         AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"administracion",null,1);
         SQLiteDatabase db = sqlAdmin.getWritableDatabase();
-        String txtcedula = cedula.getText().toString();
+        int txtcedula = Integer.parseInt(cedula.getText().toString());
         int cant = db.delete("votantes","cedula="+txtcedula,null);
         db.close();
         cedula.setText("");nombreCompleto.setText("");institucion.setText("");mesa.setText("");

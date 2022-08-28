@@ -27,26 +27,32 @@
         android:ems="10"
         android:hint="Ingrese su número de documento"
         android:inputType="number"
+        android:minHeight="48dp"
         android:text=""
         android:textAlignment="center" />
-        <EditText
+
+    <EditText
         android:id="@+id/nombreCompleto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Ingrese su nombre y apellido"
         android:inputType="text"
+        android:minHeight="48dp"
         android:text=""
         android:textAlignment="center" />
-            <EditText
+
+    <EditText
         android:id="@+id/institucion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Ingrese su Insitutción educativa"
         android:inputType="text"
+        android:minHeight="48dp"
         android:text=""
         android:textAlignment="center" />
+
     <EditText
         android:id="@+id/mesa"
         android:layout_width="match_parent"
@@ -54,6 +60,7 @@
         android:ems="10"
         android:hint="Ingrese su número mesa"
         android:inputType="number"
+        android:minHeight="48dp"
         android:text=""
         android:textAlignment="center" />
 
