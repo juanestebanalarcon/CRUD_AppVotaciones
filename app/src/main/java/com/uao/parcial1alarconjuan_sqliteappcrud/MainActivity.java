@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"uaoDB.sqlite",null,1);
+        SQLiteDatabase db = sqlAdmin.getWritableDatabase();
+        ContentValues register = new ContentValues();
         cedula = findViewById(R.id.cedula);
         nombreCompleto = findViewById(R.id.nombreCompleto);
         institucion = findViewById(R.id.institucion);
@@ -36,39 +39,36 @@ public class MainActivity extends AppCompatActivity {
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-            create(v); } });
+            create(v,db,register); } });
         btnRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                read(v); } });
+                read(v,db); } });
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                update(v); } });
+                update(v,db,register); } });
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                delete(v); } });
+                delete(v,db); } });
     }
 
     //CRUD Operations
-    public void create(View v){
-        AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"administracion",null,1);
-        SQLiteDatabase db = sqlAdmin.getWritableDatabase();
-        ContentValues register = new ContentValues();
-        int txtcedula;
-        String txtnombreCompleto,txtinstitucion,txtmesa;
+    public void create(View v,SQLiteDatabase db, ContentValues register){
+        int txtcedula,txtmesa;
+        String txtnombreCompleto,txtinstitucion;
         txtcedula =  Integer.parseInt(cedula.getText().toString());
         txtnombreCompleto = nombreCompleto.getText().toString();
         txtinstitucion = institucion.getText().toString();
-        txtmesa = mesa.getText().toString();
+        txtmesa = Integer.parseInt(mesa.getText().toString());
         register.put("cedula",txtcedula);
         register.put("nombre",txtnombreCompleto);
         register.put("colegio",txtinstitucion);
         register.put("nromesas",txtmesa);
         try {
             db.insert("votantes",null,register);
-            db.close();
+         //   db.close();
         }catch (SQLException e){
             System.out.println(e);
         }
@@ -76,9 +76,7 @@ public class MainActivity extends AppCompatActivity {
         cedula.setText("");nombreCompleto.setText("");institucion.setText("");mesa.setText("");
         Toast.makeText(this,"Se realizó el registro exitosamente",Toast.LENGTH_SHORT).show();
     }
-    public void read(View v){
-        AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"administracion",null,1);
-        SQLiteDatabase db = sqlAdmin.getWritableDatabase();
+    public void read(View v,SQLiteDatabase db){
         int ced = Integer.parseInt(cedula.getText().toString());
         try{
         Cursor row = db.rawQuery("select nombre,colegio,nromesa from votantes where cedula="+ced,null);
@@ -90,39 +88,34 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,"No se encontraron registros con ese documento.",Toast.LENGTH_SHORT).show();
 
         }
-        db.close();
+    //    db.close();
         }catch (SQLException e){
             System.out.println(e);
             Toast.makeText(this,e.toString(),Toast.LENGTH_SHORT).show();
         }
     }
-    public void update(View v) {
-        AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"administracion",null,1);
-        SQLiteDatabase db = sqlAdmin.getWritableDatabase();
-        ContentValues register = new ContentValues();
-        int txtcedula,cant;
-        String txtnombreCompleto,txtinstitucion,txtmesa;
+    public void update(View v,SQLiteDatabase db, ContentValues register) {
+        int txtcedula,cant,txtmesa;
+        String txtnombreCompleto,txtinstitucion;
         txtcedula = Integer.parseInt(cedula.getText().toString());
         txtnombreCompleto = nombreCompleto.getText().toString();
         txtinstitucion = institucion.getText().toString();
-        txtmesa = mesa.getText().toString();
+        txtmesa =Integer.parseInt( mesa.getText().toString());
         register.put("nombre",txtnombreCompleto);
         register.put("colegio",txtinstitucion);
         register.put("nromesas",txtmesa);
         cant = db.update("votantes",register,"cedula="+txtcedula,null);
-        db.close();
+    //    db.close();
         if(cant>0) {
             Toast.makeText(this,"Se modificaron los registros con ese documento.",Toast.LENGTH_SHORT).show();
         }else {
             Toast.makeText(this,"No se encontraron registros con ese documento.",Toast.LENGTH_SHORT).show();
         }
     }
-    public void delete(View v){
-        AdminSQLiteOpenHelper sqlAdmin = new AdminSQLiteOpenHelper(this,"administracion",null,1);
-        SQLiteDatabase db = sqlAdmin.getWritableDatabase();
+    public void delete(View v,SQLiteDatabase db){
         int txtcedula = Integer.parseInt(cedula.getText().toString());
         int cant = db.delete("votantes","cedula="+txtcedula,null);
-        db.close();
+   //     db.close();
         cedula.setText("");nombreCompleto.setText("");institucion.setText("");mesa.setText("");
         if(cant>0){
             Toast.makeText(this,"Se eliminó el registro con ese documento.",Toast.LENGTH_SHORT).show();
